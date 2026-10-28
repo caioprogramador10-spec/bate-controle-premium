@@ -1,0 +1,292 @@
+/* =====================================================================
+   BATE-CONTROLE ELITE — DESIGN SYSTEM · BASE
+   Identidade "Folia & Ouro":
+     · Roxo Folia  (#7c3aed) — o cetim das fantasias, cor de ação
+     · Ouro Elite  (#f2b011) — o dourado da logo, cor de destaque/dinheiro
+     · Noite de Desfile (#140b26) — o fundo escuro das áreas de marca
+   Mesmo padrão do Sistema RH Premium v3: tokens, tema claro + escuro,
+   superfícies de vidro. Para mudar a identidade, mexa só nos tokens.
+   ===================================================================== */
+
+/* ---------------------------------------------------------------
+   1. TOKENS — TEMA CLARO (padrão)
+   --------------------------------------------------------------- */
+:root {
+  /* marca */
+  --brand: #7c3aed;
+  --brand-strong: #6425d0;
+  --brand-light: #9b6bff;
+  --brand-glow: rgba(124, 58, 237, 0.28);
+  --gold: #f2b011;
+  --gold-strong: #c98a00;
+  --gold-text: #8a5d00;
+  --gold-soft: rgba(242, 176, 17, 0.14);
+  --gold-border: rgba(242, 176, 17, 0.4);
+  --night: #140b26;
+
+  /* fundo da página */
+  --bg: #f0edf6;
+  --bg-image:
+    radial-gradient(900px 620px at 6% -10%, rgba(124, 58, 237, 0.16), transparent 62%),
+    radial-gradient(760px 560px at 102% -4%, rgba(242, 176, 17, 0.16), transparent 60%),
+    radial-gradient(1100px 800px at 50% 118%, rgba(217, 70, 239, 0.1), transparent 62%),
+    linear-gradient(180deg, #f6f3fa 0%, #ebe6f3 100%);
+
+  /* superfícies */
+  --surface: rgba(255, 255, 255, 0.86);
+  --surface-solid: #ffffff;
+  --surface-2: rgba(255, 255, 255, 0.66);
+  --surface-3: rgba(30, 16, 56, 0.045);
+  --surface-hover: rgba(30, 16, 56, 0.04);
+  --surface-blur: 20px;
+
+  /* traços */
+  --border: rgba(30, 16, 56, 0.12);
+  --border-soft: rgba(30, 16, 56, 0.075);
+  --border-strong: rgba(30, 16, 56, 0.2);
+
+  /* texto */
+  --text: #17112a;
+  --text-dim: #5f5875;
+  --text-mute: #8d86a3;
+
+  /* estados */
+  --success: #12924f;
+  --success-text: #0d6d3b;
+  --success-soft: rgba(18, 146, 79, 0.12);
+  --success-border: rgba(18, 146, 79, 0.28);
+  --danger: #dc3545;
+  --danger-text: #b42332;
+  --danger-soft: rgba(220, 53, 69, 0.1);
+  --danger-border: rgba(220, 53, 69, 0.28);
+  --warn: #e0660f;
+  --warn-text: #a84a08;
+  --warn-soft: rgba(224, 102, 15, 0.12);
+  --warn-border: rgba(224, 102, 15, 0.3);
+
+  /* menu lateral */
+  --sidebar-bg: rgba(255, 255, 255, 0.8);
+  --sidebar-w: 264px;
+
+  /* acento em superfícies */
+  --accent-soft: rgba(124, 58, 237, 0.1);
+  --accent-border: rgba(124, 58, 237, 0.28);
+  --accent-text: #5b21b6;
+
+  /* sombras */
+  --shadow-xs: 0 1px 2px rgba(30, 16, 56, 0.06);
+  --shadow-sm: 0 2px 6px -1px rgba(30, 16, 56, 0.1), 0 1px 2px rgba(30, 16, 56, 0.05);
+  --shadow-md: 0 12px 26px -12px rgba(30, 16, 56, 0.22), 0 2px 6px -2px rgba(30, 16, 56, 0.08);
+  --shadow-lg: 0 28px 60px -24px rgba(30, 16, 56, 0.34), 0 6px 16px -8px rgba(30, 16, 56, 0.12);
+  --shadow-brand: 0 10px 24px -8px rgba(124, 58, 237, 0.5);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+
+  /* geometria */
+  --r-xs: 8px;
+  --r-sm: 11px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-pill: 999px;
+
+  /* tipografia */
+  --font-display: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+
+  /* movimento */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-fast: 0.14s;
+  --t: 0.22s;
+
+  /* celular */
+  --tabbar-h: 66px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ---------------------------------------------------------------
+   2. TOKENS — TEMA ESCURO
+   --------------------------------------------------------------- */
+:root[data-theme="dark"] {
+  --brand: #a679ff;
+  --brand-strong: #7c3aed;
+  --brand-light: #c4a5ff;
+  --brand-glow: rgba(166, 121, 255, 0.42);
+  --gold: #ffc53d;
+  --gold-strong: #f2b011;
+  --gold-text: #ffd978;
+  --gold-soft: rgba(255, 197, 61, 0.14);
+  --gold-border: rgba(255, 197, 61, 0.34);
+
+  --bg: #0a0614;
+  --bg-image:
+    radial-gradient(820px 560px at 6% -8%, rgba(124, 58, 237, 0.3), transparent 62%),
+    radial-gradient(720px 540px at 104% 4%, rgba(242, 176, 17, 0.14), transparent 60%),
+    radial-gradient(1000px 760px at 50% 116%, rgba(217, 70, 239, 0.12), transparent 62%),
+    linear-gradient(180deg, #0b0716 0%, #120b22 100%);
+
+  --surface: rgba(255, 255, 255, 0.055);
+  --surface-solid: #171126;
+  --surface-2: rgba(255, 255, 255, 0.035);
+  --surface-3: rgba(255, 255, 255, 0.07);
+  --surface-hover: rgba(255, 255, 255, 0.05);
+  --surface-blur: 24px;
+
+  --border: rgba(255, 255, 255, 0.11);
+  --border-soft: rgba(255, 255, 255, 0.075);
+  --border-strong: rgba(255, 255, 255, 0.2);
+
+  --text: #f0ecf8;
+  --text-dim: #a59dba;
+  --text-mute: #7a7290;
+
+  --success: #3fd383;
+  --success-text: #8fecbc;
+  --success-soft: rgba(63, 211, 131, 0.14);
+  --success-border: rgba(63, 211, 131, 0.32);
+  --danger: #ff6b7a;
+  --danger-text: #ffadb5;
+  --danger-soft: rgba(255, 107, 122, 0.14);
+  --danger-border: rgba(255, 107, 122, 0.34);
+  --warn: #ff9a4d;
+  --warn-text: #ffc196;
+  --warn-soft: rgba(255, 154, 77, 0.14);
+  --warn-border: rgba(255, 154, 77, 0.34);
+
+  --sidebar-bg: rgba(12, 7, 24, 0.78);
+
+  --accent-soft: rgba(166, 121, 255, 0.15);
+  --accent-border: rgba(166, 121, 255, 0.36);
+  --accent-text: #d3bdff;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 3px 10px -3px rgba(0, 0, 0, 0.55);
+  --shadow-md: 0 16px 34px -16px rgba(0, 0, 0, 0.75), 0 3px 10px -4px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 34px 70px -28px rgba(0, 0, 0, 0.85), 0 8px 22px -10px rgba(0, 0, 0, 0.6);
+  --shadow-brand: 0 12px 30px -8px rgba(124, 58, 237, 0.6);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+/* segue o sistema operacional enquanto o usuário não escolher um tema */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) {
+    --brand: #a679ff; --brand-strong: #7c3aed; --brand-light: #c4a5ff; --brand-glow: rgba(166, 121, 255, 0.42);
+    --gold: #ffc53d; --gold-strong: #f2b011; --gold-text: #ffd978; --gold-soft: rgba(255, 197, 61, 0.14); --gold-border: rgba(255, 197, 61, 0.34);
+    --bg: #0a0614;
+    --bg-image:
+      radial-gradient(820px 560px at 6% -8%, rgba(124, 58, 237, 0.3), transparent 62%),
+      radial-gradient(720px 540px at 104% 4%, rgba(242, 176, 17, 0.14), transparent 60%),
+      radial-gradient(1000px 760px at 50% 116%, rgba(217, 70, 239, 0.12), transparent 62%),
+      linear-gradient(180deg, #0b0716 0%, #120b22 100%);
+    --surface: rgba(255, 255, 255, 0.055); --surface-solid: #171126; --surface-2: rgba(255, 255, 255, 0.035);
+    --surface-3: rgba(255, 255, 255, 0.07); --surface-hover: rgba(255, 255, 255, 0.05); --surface-blur: 24px;
+    --border: rgba(255, 255, 255, 0.11); --border-soft: rgba(255, 255, 255, 0.075); --border-strong: rgba(255, 255, 255, 0.2);
+    --text: #f0ecf8; --text-dim: #a59dba; --text-mute: #7a7290;
+    --success: #3fd383; --success-text: #8fecbc; --success-soft: rgba(63, 211, 131, 0.14); --success-border: rgba(63, 211, 131, 0.32);
+    --danger: #ff6b7a; --danger-text: #ffadb5; --danger-soft: rgba(255, 107, 122, 0.14); --danger-border: rgba(255, 107, 122, 0.34);
+    --warn: #ff9a4d; --warn-text: #ffc196; --warn-soft: rgba(255, 154, 77, 0.14); --warn-border: rgba(255, 154, 77, 0.34);
+    --sidebar-bg: rgba(12, 7, 24, 0.78);
+    --accent-soft: rgba(166, 121, 255, 0.15); --accent-border: rgba(166, 121, 255, 0.36); --accent-text: #d3bdff;
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-sm: 0 3px 10px -3px rgba(0, 0, 0, 0.55);
+    --shadow-md: 0 16px 34px -16px rgba(0, 0, 0, 0.75), 0 3px 10px -4px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 34px 70px -28px rgba(0, 0, 0, 0.85), 0 8px 22px -10px rgba(0, 0, 0, 0.6);
+    --shadow-brand: 0 12px 30px -8px rgba(124, 58, 237, 0.6);
+    --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+}
+
+/* ---------------------------------------------------------------
+   3. BASE
+   --------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { color-scheme: light dark; -webkit-text-size-adjust: 100%; }
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+
+body {
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  line-height: 1.55;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  background-color: var(--bg);
+  background-image: var(--bg-image);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  transition: background-color 0.35s var(--ease), color 0.35s var(--ease);
+}
+
+h1, h2, h3, h4, p, ul { margin: 0; }
+ul { padding: 0; list-style: none; }
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+img { display: block; max-width: 100%; }
+
+::selection { background: var(--brand); color: #fff; }
+[hidden], .oculto { display: none !important; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.num { font-variant-numeric: tabular-nums; }
+.txt-ok { color: var(--success); }
+.txt-perigo { color: var(--danger); }
+.txt-ouro { color: var(--gold-text); }
+
+/* barras de rolagem discretas */
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: var(--border-strong); border-radius: 999px;
+  border: 3px solid transparent; background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: var(--text-mute); background-clip: content-box; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+/* ---------------------------------------------------------------
+   4. ÍCONES SVG
+   Sprite único no index.html: traço 24x24, currentColor.
+   --------------------------------------------------------------- */
+.ico {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------------------------------------------------------------
+   5. SUPERFÍCIE PADRÃO (vidro)
+   --------------------------------------------------------------- */
+.panel, .stat, .table-wrap, .modal, .toast, .hero-caixa {
+  position: relative;
+  background: var(--surface);
+  -webkit-backdrop-filter: blur(var(--surface-blur)) saturate(150%);
+  backdrop-filter: blur(var(--surface-blur)) saturate(150%);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-md), var(--shadow-inset);
+}

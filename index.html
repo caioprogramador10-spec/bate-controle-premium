@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Bate-Controle Elite · Gestão da sua turma</title>
+  <meta name="description" content="Controle financeiro da sua turma de bate-bola: componentes, pagamentos, custos extras, despesas e cobranças por WhatsApp." />
+  <meta name="theme-color" content="#7c3aed" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Bate-Controle" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/img/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png" />
+
+  <!-- Aplica o tema salvo antes da pintura, para a página não piscar -->
+  <script>(function(){try{var t=localStorage.getItem("bc_tema");if(t==="light"||t==="dark"){document.documentElement.setAttribute("data-theme",t);}}catch(e){}})();</script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/layout.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/admin.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+
+  <!-- =====================================================================
+       ÍCONES (sprite SVG) — <svg class="ico"><use href="#i-nome"/></svg>
+       ===================================================================== -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-inicio" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1Z"/></symbol>
+    <symbol id="i-pessoas" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-pessoa-mais" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></symbol>
+    <symbol id="i-carteira" viewBox="0 0 24 24"><path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/><path d="M3 7h16a2 2 0 0 1 2 2v3h-5a2 2 0 0 0 0 4h5"/></symbol>
+    <symbol id="i-dinheiro" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/><path d="M6 12h.01M18 12h.01"/></symbol>
+    <symbol id="i-recibo" viewBox="0 0 24 24"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2Z"/><path d="M9 8h6M9 12h6M9 16h3"/></symbol>
+    <symbol id="i-rateio" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6.4 6.4"/></symbol>
+    <symbol id="i-mais" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-grade" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
+    <symbol id="i-busca" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+    <symbol id="i-relatorio" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></symbol>
+    <symbol id="i-planilha" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2.5"/><path d="M3 9h18M3 15h18M9 3v18"/></symbol>
+    <symbol id="i-fechar" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-sair" viewBox="0 0 24 24"><path d="M12 3v9"/><path d="M18.4 6.6a9 9 0 1 1-12.8 0"/></symbol>
+    <symbol id="i-sol" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-lua" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></symbol>
+    <symbol id="i-megafone" viewBox="0 0 24 24"><path d="m3 11 18-5v12L3 14v-3Z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></symbol>
+    <symbol id="i-whats" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.5 8.5 0 1 1 21 11.5Z"/><path d="M9 9.5c0 2.8 2.7 5.5 5.5 5.5"/></symbol>
+    <symbol id="i-editar" viewBox="0 0 24 24"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></symbol>
+    <symbol id="i-lixeira" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6M14 11v6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-alerta" viewBox="0 0 24 24"><path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z"/><path d="M12 9v4M12 17h.01"/></symbol>
+    <symbol id="i-relogio" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-calendario" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
+    <symbol id="i-trocar" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.8 9.8 0 0 0-6.7 2.7L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.8 9.8 0 0 0 6.7-2.7L21 16"/><path d="M16 16h5v5"/></symbol>
+    <symbol id="i-cadeado" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+    <symbol id="i-usuario" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+    <symbol id="i-telefone" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></symbol>
+    <symbol id="i-olho" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-olho-off" viewBox="0 0 24 24"><path d="M9.9 9.9a3 3 0 1 0 4.2 4.2"/><path d="M10.7 5.1A10.4 10.4 0 0 1 12 5c6.5 0 10 7 10 7a13.2 13.2 0 0 1-1.7 2.7"/><path d="M6.6 6.6A13.5 13.5 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 5.4-1.6"/><path d="m2 2 20 20"/></symbol>
+    <symbol id="i-seta" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-coroa" viewBox="0 0 24 24"><path d="M3 18h18L19 7l-5 4-2-6-2 6-5-4Z"/><path d="M5 21h14"/></symbol>
+    <symbol id="i-cartao" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20M6 15h4"/></symbol>
+    <symbol id="i-copiar" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></symbol>
+    <symbol id="i-suporte" viewBox="0 0 24 24"><path d="M3 14v-2a9 9 0 0 1 18 0v2"/><path d="M21 15a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2Z"/><path d="M3 15a2 2 0 0 0 2 2h1v-6H5a2 2 0 0 0-2 2Z"/><path d="M18 17v1a3 3 0 0 1-3 3h-3"/></symbol>
+    <symbol id="i-mascara" viewBox="0 0 24 24"><path d="M3 6.5c3-1.6 6-1.6 9 0 3-1.6 6-1.6 9 0V11a9 9 0 0 1-18 0Z"/><path d="M7.5 10.5h2M14.5 10.5h2"/><path d="M9 15.5c1.8 1.3 4.2 1.3 6 0"/></symbol>
+    <symbol id="i-tendencia" viewBox="0 0 24 24"><path d="m22 7-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/></symbol>
+    <symbol id="i-tendencia-baixo" viewBox="0 0 24 24"><path d="m22 17-8.5-8.5-5 5L2 7"/><path d="M16 17h6v-6"/></symbol>
+    <symbol id="i-escudo" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m10 8.5 5 3.5-5 3.5Z"/></symbol>
+  </svg>
+
+  <!-- =====================================================================
+       TELA DE ACESSO (login + cadastro de turma)
+       ===================================================================== -->
+  <div id="tela-acesso" class="tela-acesso">
+    <div class="login-shell">
+      <aside class="login-aside">
+        <div class="login-aside-topo">
+          <div class="brand-mark"><img src="img/logo.png" alt="" /></div>
+          <div>
+            <strong>Bate-Controle Elite</strong>
+            <span>Gestão &amp; controle da sua turma</span>
+          </div>
+        </div>
+        <div>
+          <img class="login-hero-logo" src="img/logo.png" alt="Bate-Controle Elite" />
+          <h2>Sua turma organizada,<br /><em>do primeiro real ao desfile.</em></h2>
+          <p class="lead">Componentes, mensalidades da fantasia, custos extras rateados e despesas — tudo no mesmo caixa, com cobrança no WhatsApp em um toque.</p>
+          <ul class="login-points">
+            <li><span class="chk"><svg class="ico"><use href="#i-check"/></svg></span>Quem pagou, quem deve e quem está atrasado</li>
+            <li><span class="chk"><svg class="ico"><use href="#i-check"/></svg></span>Custos extras divididos automaticamente</li>
+            <li><span class="chk"><svg class="ico"><use href="#i-check"/></svg></span>Lembrete de vencimento direto no WhatsApp</li>
+            <li><span class="chk"><svg class="ico"><use href="#i-check"/></svg></span>Balanço do caixa e relatório em PDF</li>
+          </ul>
+        </div>
+        <p class="login-foot">Criado por Caio Cezar Pinheiro dos Santos</p>
+      </aside>
+
+      <div class="login-panel">
+        <button type="button" class="btn btn-icon login-theme" onclick="alternarTema()" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <svg class="ico icon-sun"><use href="#i-sol"/></svg><svg class="ico icon-moon"><use href="#i-lua"/></svg>
+        </button>
+
+        <div class="cartao-acesso">
+          <img class="login-logo-mobile" src="img/logo.png" alt="Bate-Controle Elite" />
+
+          <div class="seg seg-full" role="tablist" aria-label="Entrar ou cadastrar">
+            <button type="button" class="seg-opt" id="aba-entrar" aria-pressed="true" onclick="definirModoAcesso(false)"><svg class="ico"><use href="#i-cadeado"/></svg>Entrar</button>
+            <button type="button" class="seg-opt" id="aba-cadastrar" aria-pressed="false" onclick="definirModoAcesso(true)"><svg class="ico"><use href="#i-mascara"/></svg>Cadastrar turma</button>
+          </div>
+
+          <p class="eyebrow" id="login-eyebrow">Área da turma</p>
+          <h3 id="login-titulo">Entrar no Bate-Controle</h3>
+          <p class="sub" id="login-subtitulo">Acesse para gerenciar o caixa da sua turma.</p>
+
+          <form id="form-acesso" novalidate>
+            <div class="form-grupo">
+              <label for="usuario">Nome da turma (usuário)</label>
+              <div class="input-ico">
+                <svg class="ico"><use href="#i-usuario"/></svg>
+                <input type="text" id="usuario" placeholder="ex.: turmadoleque" autocomplete="username" autocapitalize="none" spellcheck="false" required />
+              </div>
+            </div>
+
+            <div class="form-grupo">
+              <label for="senha">Senha</label>
+              <div class="input-ico acesso-campo">
+                <svg class="ico"><use href="#i-cadeado"/></svg>
+                <input type="password" id="senha" placeholder="••••••••" autocomplete="current-password" required />
+                <button type="button" id="mostrar-senha" class="acesso-olho" title="Mostrar senha" aria-label="Mostrar senha">
+                  <svg class="ico"><use href="#i-olho"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div id="campos-cadastro" class="oculto">
+              <div class="form-grupo">
+                <label for="whatsapp_lider">WhatsApp do líder</label>
+                <div class="input-ico">
+                  <svg class="ico"><use href="#i-whats"/></svg>
+                  <input type="tel" id="whatsapp_lider" placeholder="(21) 98888-7777" inputmode="tel" autocomplete="tel" data-mascara-tel />
+                </div>
+              </div>
+
+              <div class="form-grupo indicacao-box">
+                <label>Foi indicado por outra turma?</label>
+                <div class="seg seg-full" id="seg-indicacao">
+                  <button type="button" class="seg-opt" aria-pressed="true" data-indicado="nao">Não</button>
+                  <button type="button" class="seg-opt" aria-pressed="false" data-indicado="sim">Sim</button>
+                </div>
+                <div id="wrapper-id-indicador" class="oculto" style="margin-top:12px">
+                  <input type="text" id="id_indicador" placeholder="Nome da turma que indicou" autocapitalize="none" />
+                  <p class="form-dica">A cada 5 indicações a turma que indicou ganha desconto.</p>
+                </div>
+              </div>
+              <p class="trial-pill"><svg class="ico"><use href="#i-escudo"/></svg>15 dias grátis, sem cartão</p>
+            </div>
+
+            <button type="submit" id="btn-login-entrar" class="btn btn-accent botao-acesso-entrar">
+              <span id="btn-login-texto">Entrar</span> <svg class="ico"><use href="#i-seta"/></svg>
+            </button>
+          </form>
+
+          <button type="button" class="btn btn-ghost btn-demo" onclick="entrarModoDemo()">
+            <svg class="ico"><use href="#i-play"/></svg>Ver demonstração sem cadastro
+          </button>
+
+          <p class="login-help">Problemas para entrar? <a href="#" onclick="abrirSuporte(); return false;">Fale com o suporte</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       BLOQUEIO DE ASSINATURA
+       ===================================================================== -->
+  <div id="bloqueio-assinatura" class="tela-bloqueio oculto">
+    <div class="bloqueio-card">
+      <div class="bloqueio-ico"><svg class="ico"><use href="#i-cadeado"/></svg></div>
+      <p class="eyebrow">Assinatura</p>
+      <h2>Acesso pausado</h2>
+      <p id="mensagem-bloqueio" class="bloqueio-txt">Sua mensalidade venceu. Para continuar organizando sua turma e evitar calotes, renove a assinatura.</p>
+
+      <div class="bloqueio-preco">
+        <span>Mensalidade</span>
+        <strong id="bloqueio-valor">R$ 39,90</strong>
+        <small>por turma · acesso completo</small>
+      </div>
+
+      <button type="button" class="btn btn-accent btn-bloco" onclick="pagarComCartao()">
+        <svg class="ico"><use href="#i-cartao"/></svg>Pagar com cartão
+      </button>
+
+      <div class="pix-box">
+        <div>
+          <span>Ou pague via PIX (e-mail)</span>
+          <strong id="bloqueio-pix">—</strong>
+        </div>
+        <button type="button" class="btn btn-sm" onclick="copiarPix()"><svg class="ico"><use href="#i-copiar"/></svg>Copiar</button>
+      </div>
+
+      <div class="bloqueio-acoes">
+        <button type="button" class="btn btn-ghost" onclick="abrirSuporte('Olá! Já paguei o Bate-Controle e quero liberar meu acesso.')"><svg class="ico"><use href="#i-whats"/></svg>Já paguei</button>
+        <button type="button" class="btn btn-ghost" onclick="fazerLogout()"><svg class="ico"><use href="#i-sair"/></svg>Sair</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       APLICAÇÃO
+       ===================================================================== -->
+  <div class="app" id="app-content">
+
+    <!-- ---------- MENU LATERAL (computador) ---------- -->
+    <aside class="sidebar" id="sidebar" aria-label="Menu principal">
+      <div class="sb-brand">
+        <div class="brand-mark"><img src="img/logo.png" alt="Bate-Controle" /></div>
+        <div class="sb-brand-txt">
+          <strong>Bate-Controle</strong>
+          <span>Elite · gestão da turma</span>
+        </div>
+      </div>
+
+      <div class="sb-plano" id="sb-plano"></div>
+
+      <nav class="sb-nav">
+        <p class="sb-group">Geral</p>
+        <button class="nav-item" data-rota="painel" type="button">
+          <svg class="ico"><use href="#i-inicio"/></svg><span>Visão geral</span>
+        </button>
+        <button class="nav-item" data-rota="componentes" type="button">
+          <svg class="ico"><use href="#i-pessoas"/></svg><span>Componentes</span>
+          <span class="count count-danger" id="nav-count-atrasados" title="Componentes atrasados"></span>
+        </button>
+        <button class="nav-item" data-rota="caixa" type="button">
+          <svg class="ico"><use href="#i-carteira"/></svg><span>Custos &amp; despesas</span>
+        </button>
+
+        <p class="sb-group">Ferramentas</p>
+        <button class="nav-item" data-rota="mais" type="button">
+          <svg class="ico"><use href="#i-grade"/></svg><span>Relatórios &amp; ajustes</span>
+        </button>
+        <button class="nav-item oculto" id="nav-master" type="button" onclick="acessarPainelDono()">
+          <svg class="ico"><use href="#i-coroa"/></svg><span>Painel master</span>
+        </button>
+        <button class="nav-item nav-tool" type="button" onclick="abrirSuporte()">
+          <svg class="ico"><use href="#i-suporte"/></svg><span>Suporte no WhatsApp</span>
+        </button>
+      </nav>
+
+      <div class="sb-foot">
+        <div class="sb-user">
+          <span class="avatar-usuario" id="avatar-turma" aria-hidden="true">BC</span>
+          <div class="sb-user-info">
+            <span class="sb-user-label">Turma</span>
+            <span class="user-badge" id="nome-turma-sb">—</span>
+          </div>
+        </div>
+        <div class="sb-foot-actions">
+          <button class="btn btn-icon" type="button" onclick="alternarTema()" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+            <svg class="ico icon-sun"><use href="#i-sol"/></svg><svg class="ico icon-moon"><use href="#i-lua"/></svg>
+          </button>
+          <button class="btn btn-icon" id="botao-sair" type="button" onclick="fazerLogout()" title="Sair" aria-label="Sair">
+            <svg class="ico"><use href="#i-sair"/></svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ---------- CONTEÚDO ---------- -->
+    <div class="main-col">
+
+      <header class="mobilebar">
+        <div class="brand-mark"><img src="img/logo.png" alt="" /></div>
+        <div class="mobilebar-title">
+          <strong id="mobile-titulo">Visão geral</strong>
+          <span id="mobile-turma">Bate-Controle</span>
+        </div>
+        <button class="btn btn-icon" type="button" onclick="alternarTema()" aria-label="Alternar tema">
+          <svg class="ico icon-sun"><use href="#i-sol"/></svg><svg class="ico icon-moon"><use href="#i-lua"/></svg>
+        </button>
+      </header>
+
+      <div id="faixa-demo" class="faixa-demo oculto">
+        <svg class="ico"><use href="#i-play"/></svg>
+        <span>Modo demonstração<span class="txt-longo"> — os dados ficam só neste aparelho</span>.</span>
+        <button type="button" class="link-ver" onclick="fazerLogout()">Sair da demo</button>
+      </div>
+
+      <main class="conteudo">
+
+        <!-- ===================== VISÃO GERAL ===================== -->
+        <section id="pagina-painel" class="pagina">
+          <div class="page-head">
+            <div>
+              <p class="page-eyebrow" id="painel-data">Hoje</p>
+              <h1 class="page-title" id="painel-saudacao">Olá, turma</h1>
+              <p class="page-sub">O resumo do caixa e quem precisa da sua atenção.</p>
+            </div>
+            <div class="page-tools">
+              <button type="button" class="btn" onclick="avisarVencimentosAmanha()"><svg class="ico"><use href="#i-megafone"/></svg>Avisar vencimentos</button>
+              <button type="button" class="btn btn-accent" onclick="abrirFormComponente()"><svg class="ico"><use href="#i-pessoa-mais"/></svg>Novo componente</button>
+            </div>
+          </div>
+
+          <!-- balanço em caixa -->
+          <div class="hero-caixa" id="card-balanco-real">
+            <div class="hero-topo">
+              <div>
+                <p class="hero-lbl">Balanço em caixa</p>
+                <p class="hero-valor" id="valor-balanco">R$ 0,00</p>
+                <p class="hero-status" id="status-financeiro"></p>
+              </div>
+              <div class="hero-ico"><svg class="ico"><use href="#i-carteira"/></svg></div>
+            </div>
+            <div class="hero-barra">
+              <div class="hero-barra-info">
+                <span>Arrecadado <strong id="hero-pct">0%</strong> da projeção</span>
+                <span class="mono" id="hero-faltam">faltam R$ 0,00</span>
+              </div>
+              <div class="meter meter-lg"><span class="meter-seg" id="hero-meter" style="width:0%"></span></div>
+            </div>
+            <div class="hero-mini">
+              <div><span>Entradas</span><strong id="hero-entradas">R$ 0,00</strong></div>
+              <div><span>Despesas</span><strong id="hero-saidas">R$ 0,00</strong></div>
+              <div><span>Custos extras</span><strong id="hero-extras">R$ 0,00</strong></div>
+            </div>
+          </div>
+
+          <div class="stats" id="resumo-financeiro">
+            <button type="button" class="stat" data-ir="componentes">
+              <div class="stat-ico"><svg class="ico"><use href="#i-pessoas"/></svg></div>
+              <div class="num" id="total-componentes">0</div>
+              <div class="lbl">Componentes</div>
+              <div class="meta" id="meta-componentes">na turma</div>
+            </button>
+            <div class="stat ouro">
+              <div class="stat-ico"><svg class="ico"><use href="#i-tendencia"/></svg></div>
+              <div class="num" id="meta-total">R$ 0</div>
+              <div class="lbl">Projeção de caixa</div>
+              <div class="meta">fantasias + extras</div>
+            </div>
+            <div class="stat ok">
+              <div class="stat-ico"><svg class="ico"><use href="#i-dinheiro"/></svg></div>
+              <div class="num" id="total-pago">R$ 0</div>
+              <div class="lbl">Total pago</div>
+              <div class="meta" id="meta-quitados">0 quitados</div>
+            </div>
+            <button type="button" class="stat danger" data-ir="componentes" data-filtro="atrasado">
+              <div class="stat-ico"><svg class="ico"><use href="#i-alerta"/></svg></div>
+              <div class="num" id="total-devedor">R$ 0</div>
+              <div class="lbl">Restante a receber</div>
+              <div class="meta" id="meta-atrasados">0 atrasados</div>
+            </button>
+          </div>
+
+          <div class="grade-2">
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <h2>Vencimentos que pedem atenção</h2>
+                  <p class="hint">Atrasados e quem vence nos próximos 7 dias.</p>
+                </div>
+                <button type="button" class="link-ver" data-ir="componentes">Ver todos <svg class="ico"><use href="#i-seta"/></svg></button>
+              </div>
+              <ul class="lista-atencao" id="painel-vencimentos"></ul>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <h2>Maiores saldos em aberto</h2>
+                  <p class="hint">Quem ainda tem mais a pagar, já com o rateio.</p>
+                </div>
+                <button type="button" class="link-ver" data-ir="componentes">Ver turma <svg class="ico"><use href="#i-seta"/></svg></button>
+              </div>
+              <ul class="lista-atencao" id="painel-devedores"></ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== COMPONENTES ===================== -->
+        <section id="pagina-componentes" class="pagina">
+          <div class="page-head">
+            <div>
+              <p class="page-eyebrow">Turma</p>
+              <h1 class="page-title">Componentes &amp; pagamentos</h1>
+              <p class="page-sub">Registre pagamentos, cobre pelo WhatsApp e acompanhe o saldo de cada um (fantasia + rateio dos extras).</p>
+            </div>
+            <div class="page-tools">
+              <button type="button" class="btn" onclick="editarValorGlobal()"><svg class="ico"><use href="#i-editar"/></svg>Valor de todos</button>
+              <button type="button" class="btn" onclick="avisarVencimentosAmanha()"><svg class="ico"><use href="#i-megafone"/></svg>Avisar amanhã</button>
+              <button type="button" class="btn btn-accent" onclick="abrirFormComponente()"><svg class="ico"><use href="#i-pessoa-mais"/></svg>Novo componente</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="filters">
+              <div class="field field-busca input-ico">
+                <svg class="ico"><use href="#i-busca"/></svg>
+                <input type="search" id="buscaNome" placeholder="Buscar por nome ou telefone..." aria-label="Buscar componente" />
+              </div>
+              <div class="seg" id="seg-filtro">
+                <button type="button" class="seg-opt" aria-pressed="true" data-filtro="todos">Todos <span class="count" id="cnt-todos"></span></button>
+                <button type="button" class="seg-opt" aria-pressed="false" data-filtro="atrasado">Atrasados <span class="count count-danger" id="cnt-atrasado"></span></button>
+                <button type="button" class="seg-opt" aria-pressed="false" data-filtro="em-dia">Em dia <span class="count" id="cnt-em-dia"></span></button>
+                <button type="button" class="seg-opt" aria-pressed="false" data-filtro="quitado">Quitados <span class="count" id="cnt-quitado"></span></button>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Componente</th>
+                    <th>Total</th>
+                    <th>Pago</th>
+                    <th>Saldo</th>
+                    <th>Situação</th>
+                    <th class="col-acoes"><span class="sr-only">Ações</span></th>
+                  </tr>
+                </thead>
+                <tbody id="corpoTabela"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== CUSTOS & DESPESAS ===================== -->
+        <section id="pagina-caixa" class="pagina">
+          <div class="page-head">
+            <div>
+              <p class="page-eyebrow">Caixa</p>
+              <h1 class="page-title">Custos extras &amp; despesas</h1>
+              <p class="page-sub">Custos extras são divididos entre todos os componentes. Despesas são o que já saiu do caixa.</p>
+            </div>
+          </div>
+
+          <div class="grade-2">
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <h2><span class="h-ico ouro"><svg class="ico"><use href="#i-rateio"/></svg></span>Custos extras (rateio)</h2>
+                  <p class="hint">Ex.: ônibus, bateria, aluguel. Entram na conta de cada componente.</p>
+                </div>
+              </div>
+
+              <form class="form-inline" id="form-extra">
+                <input type="text" id="descExtra" placeholder="Descrição (ex.: Ônibus)" aria-label="Descrição do custo" />
+                <input type="text" id="valorExtra" placeholder="R$ 0,00" inputmode="decimal" aria-label="Valor do custo" data-mascara-moeda />
+                <button type="submit" class="btn btn-accent"><svg class="ico"><use href="#i-mais"/></svg><span>Adicionar</span></button>
+              </form>
+
+              <div class="destaque-rateio">
+                <span>Cada componente paga a mais</span>
+                <strong id="valorExtraPorPessoa">R$ 0,00</strong>
+                <small id="rateio-detalhe">total de R$ 0,00 ÷ 0 componentes</small>
+              </div>
+
+              <ul class="lista-itens" id="listaExtras"></ul>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <h2><span class="h-ico perigo"><svg class="ico"><use href="#i-recibo"/></svg></span>Despesas</h2>
+                  <p class="hint">Compras e pagamentos feitos com o dinheiro da turma.</p>
+                </div>
+              </div>
+
+              <form class="form-grid" id="form-gasto">
+                <input type="text" id="gasto-item" placeholder="O que comprou?" aria-label="Item comprado" class="span-2" />
+                <input type="text" id="gasto-valor" placeholder="R$ 0,00" inputmode="decimal" aria-label="Valor" data-mascara-moeda />
+                <input type="text" id="gasto-delegado" placeholder="Quem comprou?" aria-label="Responsável" />
+                <button type="submit" class="btn btn-accent span-2"><svg class="ico"><use href="#i-recibo"/></svg>Registrar despesa</button>
+              </form>
+
+              <div class="destaque-rateio perigo">
+                <span>Total de despesas</span>
+                <strong id="total-gastos-manuais">R$ 0,00</strong>
+                <small id="gastos-detalhe">0 lançamentos</small>
+              </div>
+
+              <ul class="lista-itens" id="lista-gastos-manuais"></ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== RELATÓRIOS & AJUSTES ===================== -->
+        <section id="pagina-mais" class="pagina">
+          <div class="page-head">
+            <div>
+              <p class="page-eyebrow">Ferramentas</p>
+              <h1 class="page-title">Relatórios &amp; ajustes</h1>
+              <p class="page-sub">Exporte os dados, gerencie a temporada e sua conta.</p>
+            </div>
+          </div>
+
+          <div class="conta-card panel" id="conta-card"></div>
+
+          <div class="acoes-grid">
+            <button type="button" class="acao-card" onclick="gerarRelatorioPDF()">
+              <span class="acao-ico"><svg class="ico"><use href="#i-relatorio"/></svg></span>
+              <strong>Relatório em PDF</strong>
+              <small>Resumo, despesas e lista de pagamentos.</small>
+            </button>
+            <button type="button" class="acao-card" onclick="exportarCSV()">
+              <span class="acao-ico ok"><svg class="ico"><use href="#i-planilha"/></svg></span>
+              <strong>Planilha (CSV)</strong>
+              <small>Abre no Excel ou Google Planilhas.</small>
+            </button>
+            <button type="button" class="acao-card" onclick="avisarVencimentosAmanha()">
+              <span class="acao-ico ouro"><svg class="ico"><use href="#i-megafone"/></svg></span>
+              <strong>Avisar vencimentos</strong>
+              <small>Manda lembrete a quem vence amanhã.</small>
+            </button>
+            <button type="button" class="acao-card" onclick="editarValorGlobal()">
+              <span class="acao-ico"><svg class="ico"><use href="#i-editar"/></svg></span>
+              <strong>Valor de todos</strong>
+              <small>Atualiza a fantasia de todo mundo.</small>
+            </button>
+            <button type="button" class="acao-card" onclick="abrirSuporte()">
+              <span class="acao-ico ok"><svg class="ico"><use href="#i-suporte"/></svg></span>
+              <strong>Suporte</strong>
+              <small>Fale com a gente no WhatsApp.</small>
+            </button>
+            <button type="button" class="acao-card perigo" onclick="zerarTemporada()">
+              <span class="acao-ico perigo"><svg class="ico"><use href="#i-trocar"/></svg></span>
+              <strong>Zerar temporada</strong>
+              <small>Zera pagamentos, extras e despesas.</small>
+            </button>
+          </div>
+
+          <div class="mais-rodape">
+            <button type="button" class="btn" onclick="alternarTema()"><svg class="ico icon-sun"><use href="#i-sol"/></svg><svg class="ico icon-moon"><use href="#i-lua"/></svg>Alternar tema</button>
+            <button type="button" class="btn btn-danger" onclick="fazerLogout()"><svg class="ico"><use href="#i-sair"/></svg>Sair da conta</button>
+          </div>
+        </section>
+
+      </main>
+
+      <footer class="rodape">Bate-Controle Elite · Criado por <strong>Caio Cezar Pinheiro dos Santos</strong></footer>
+    </div>
+
+    <!-- ---------- BARRA INFERIOR (celular) ---------- -->
+    <nav class="tabbar" aria-label="Navegação">
+      <button type="button" class="tab" data-rota="painel"><svg class="ico"><use href="#i-inicio"/></svg><span>Início</span></button>
+      <button type="button" class="tab" data-rota="componentes"><svg class="ico"><use href="#i-pessoas"/></svg><span>Turma</span><i class="tab-dot" id="tab-dot-atrasados"></i></button>
+      <button type="button" class="tab tab-fab" onclick="abrirFormComponente()" aria-label="Novo componente"><span class="fab"><svg class="ico"><use href="#i-mais"/></svg></span></button>
+      <button type="button" class="tab" data-rota="caixa"><svg class="ico"><use href="#i-carteira"/></svg><span>Caixa</span></button>
+      <button type="button" class="tab" data-rota="mais"><svg class="ico"><use href="#i-grade"/></svg><span>Mais</span></button>
+    </nav>
+  </div>
+
+  <!-- =====================================================================
+       PAINEL LATERAL — COMPONENTE (novo / editar)
+       ===================================================================== -->
+  <div class="modal-overlay drawer-overlay" id="drawer-componente">
+    <form class="drawer" id="form-componente" role="dialog" aria-modal="true" aria-labelledby="componente-titulo" novalidate>
+      <div class="drawer-head">
+        <div>
+          <p class="eyebrow">Turma</p>
+          <h3 id="componente-titulo">Novo componente</h3>
+          <p>Cadastre quem vai sair na turma e o valor da fantasia.</p>
+        </div>
+        <button type="button" class="btn btn-icon" data-fechar aria-label="Fechar"><svg class="ico"><use href="#i-fechar"/></svg></button>
+      </div>
+      <div class="drawer-body">
+        <input type="hidden" id="componente-id" />
+        <div class="form-grupo">
+          <label for="nome">Nome completo</label>
+          <input type="text" id="nome" placeholder="Ex.: João da Silva" autocomplete="off" required />
+        </div>
+        <div class="form-grupo">
+          <label for="telefone">WhatsApp</label>
+          <div class="input-ico">
+            <svg class="ico"><use href="#i-whats"/></svg>
+            <input type="tel" id="telefone" placeholder="(21) 98888-7777" inputmode="tel" data-mascara-tel required />
+          </div>
+        </div>
+        <div class="form-linha">
+          <div class="form-grupo">
+            <label for="valorTotal">Valor da fantasia</label>
+            <input type="text" id="valorTotal" placeholder="R$ 0,00" inputmode="decimal" data-mascara-moeda required />
+          </div>
+          <div class="form-grupo">
+            <label for="dataVencimento">Vencimento</label>
+            <input type="date" id="dataVencimento" required />
+          </div>
+        </div>
+        <div class="form-grupo oculto" id="grupo-valor-pago">
+          <label for="valorPagoEdit">Total já pago</label>
+          <input type="text" id="valorPagoEdit" placeholder="R$ 0,00" inputmode="decimal" data-mascara-moeda />
+          <p class="form-dica">Use só para corrigir um lançamento errado.</p>
+        </div>
+        <div class="drawer-info" id="componente-info">
+          <div class="di-linha"><svg class="ico"><use href="#i-info"/></svg><span>O valor dos <strong>custos extras</strong> é somado automaticamente ao total de cada componente.</span></div>
+        </div>
+      </div>
+      <div class="drawer-foot">
+        <button type="button" class="btn" data-fechar>Cancelar</button>
+        <button type="submit" class="btn btn-accent" id="btn-cadastrar"><svg class="ico"><use href="#i-check"/></svg><span>Salvar componente</span></button>
+      </div>
+    </form>
+  </div>
+
+  <!-- =====================================================================
+       MODAL — REGISTRAR PAGAMENTO
+       ===================================================================== -->
+  <div class="modal-overlay" id="modal-pagamento">
+    <form class="modal" id="form-pagamento" role="dialog" aria-modal="true" aria-labelledby="pag-titulo" novalidate>
+      <div class="confirm-ico" data-tom="ok"><svg class="ico"><use href="#i-dinheiro"/></svg></div>
+      <h3 id="pag-titulo">Registrar pagamento</h3>
+      <div class="pag-resumo" id="pag-resumo"></div>
+      <div class="form-grupo">
+        <label for="pag-valor">Valor recebido</label>
+        <input type="text" id="pag-valor" placeholder="R$ 0,00" inputmode="decimal" data-mascara-moeda required />
+        <div class="chips" id="pag-chips"></div>
+      </div>
+      <label class="check-linha">
+        <input type="checkbox" id="pag-avancar" checked />
+        <span>Avançar o vencimento em 1 mês <small id="pag-novo-venc"></small></span>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn" data-fechar>Cancelar</button>
+        <button type="submit" class="btn btn-accent"><svg class="ico"><use href="#i-check"/></svg>Confirmar pagamento</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- =====================================================================
+       MODAL — PERGUNTA GENÉRICA (substitui prompt)
+       ===================================================================== -->
+  <div class="modal-overlay" id="modal-pergunta">
+    <form class="modal" id="form-pergunta" role="dialog" aria-modal="true" aria-labelledby="pergunta-titulo" novalidate>
+      <div class="confirm-ico"><svg class="ico"><use href="#i-editar"/></svg></div>
+      <h3 id="pergunta-titulo">—</h3>
+      <p id="pergunta-texto"></p>
+      <div class="form-grupo">
+        <label for="pergunta-input" id="pergunta-label">Valor</label>
+        <input type="text" id="pergunta-input" />
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn" data-fechar>Cancelar</button>
+        <button type="submit" class="btn btn-accent" id="pergunta-ok">Salvar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- =====================================================================
+       MODAL — CONFIRMAÇÃO (substitui confirm)
+       ===================================================================== -->
+  <div class="modal-overlay" id="modal-confirmar">
+    <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="confirmar-titulo">
+      <div class="confirm-ico" id="confirmar-ico" data-tom="perigo"><svg class="ico"><use href="#i-alerta"/></svg></div>
+      <h3 id="confirmar-titulo">Tem certeza?</h3>
+      <p id="confirmar-texto"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn" data-fechar>Cancelar</button>
+        <button type="button" class="btn btn-danger-solid" id="confirmar-ok">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       MODAL — LISTA DE AVISOS (vencimentos de amanhã)
+       ===================================================================== -->
+  <div class="modal-overlay" id="modal-avisos">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="avisos-titulo">
+      <div class="confirm-ico" data-tom="alerta"><svg class="ico"><use href="#i-megafone"/></svg></div>
+      <h3 id="avisos-titulo">Avisar vencimentos</h3>
+      <p id="avisos-texto"></p>
+      <ul class="lista-atencao" id="avisos-lista" style="margin-bottom:20px"></ul>
+      <div class="modal-actions">
+        <button type="button" class="btn" data-fechar>Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       PAINEL MASTER (dono do sistema)
+       ===================================================================== -->
+  <div id="painel-dono" class="tela-master oculto">
+
+    <header class="master-topbar">
+      <div class="brand-mark"><img src="assets/img/logo.png" alt="" /></div>
+      <div class="master-topbar-txt">
+        <strong>Gestão master</strong>
+        <span>Bate-Controle Elite</span>
+      </div>
+      <div class="master-topbar-acoes">
+        <button type="button" class="btn btn-icon" id="btn-master-atualizar" onclick="renderizarUsuariosAdmin()" title="Atualizar" aria-label="Atualizar"><svg class="ico"><use href="#i-trocar"/></svg></button>
+        <button type="button" class="btn btn-icon" onclick="alternarTema()" title="Alternar tema" aria-label="Alternar tema"><svg class="ico icon-sun"><use href="#i-sol"/></svg><svg class="ico icon-moon"><use href="#i-lua"/></svg></button>
+        <button type="button" class="btn so-desktop" onclick="fecharPainelDono()" title="Abrir o app com a turma de teste do admin"><svg class="ico"><use href="#i-inicio"/></svg>Ir para o app</button>
+        <button type="button" class="btn btn-icon btn-danger" onclick="fazerLogout()" title="Sair" aria-label="Sair"><svg class="ico"><use href="#i-sair"/></svg></button>
+      </div>
+    </header>
+
+    <div class="master-wrap">
+      <div class="page-head">
+        <div>
+          <p class="page-eyebrow" id="master-data">Hoje</p>
+          <h1 class="page-title">Turmas &amp; assinaturas</h1>
+          <p class="page-sub">Receita, testes grátis, vencimentos e indicações em um só lugar.</p>
+        </div>
+        <div class="page-tools">
+          <button type="button" class="btn" onclick="exportarTurmasCSV()"><svg class="ico"><use href="#i-planilha"/></svg>Exportar CSV</button>
+          <button type="button" class="btn" onclick="lembrarInativasEmLote()"><svg class="ico"><use href="#i-relogio"/></svg>Lembrar quem sumiu</button>
+          <button type="button" class="btn btn-accent" onclick="cobrarVencendoEmLote()"><svg class="ico"><use href="#i-megafone"/></svg>Avisar quem vence</button>
+        </div>
+      </div>
+
+      <!-- receita em destaque -->
+      <div class="hero-caixa master-hero">
+        <div class="hero-topo">
+          <div>
+            <p class="hero-lbl">Receita mensal recorrente</p>
+            <p class="hero-valor" id="master-faturamento">R$ 0,00</p>
+            <p class="hero-status" id="master-hero-status"></p>
+          </div>
+          <div class="hero-ico"><svg class="ico"><use href="#i-coroa"/></svg></div>
+        </div>
+        <div class="hero-barra">
+          <div class="hero-barra-info">
+            <span>Taxa de conversão <strong id="master-conv-pct">0%</strong></span>
+            <span class="mono" id="master-conv-txt">0 de 0 turmas pagam</span>
+          </div>
+          <div class="meter meter-lg"><span class="meter-seg" id="master-conv-meter" style="width:0%"></span></div>
+        </div>
+        <div class="hero-mini">
+          <div><span>Potencial (se todos pagassem)</span><strong id="master-potencial">R$ 0,00</strong></div>
+          <div><span>Em risco (vencem em 7 dias)</span><strong id="master-risco">R$ 0,00</strong></div>
+          <div><span>Novas turmas (30 dias)</span><strong id="master-novas">0</strong></div>
+        </div>
+      </div>
+
+      <div class="stats stats-master" id="estatisticas-master">
+        <button type="button" class="stat" data-mfiltro="todas"><div class="stat-ico"><svg class="ico"><use href="#i-pessoas"/></svg></div><div class="num" id="master-total-turmas">0</div><div class="lbl">Turmas</div><div class="meta">cadastradas</div></button>
+        <button type="button" class="stat ok" data-mfiltro="pagas"><div class="stat-ico"><svg class="ico"><use href="#i-coroa"/></svg></div><div class="num" id="master-assinantes">0</div><div class="lbl">Assinantes</div><div class="meta">pagando e ativos</div></button>
+        <button type="button" class="stat ouro" data-mfiltro="teste"><div class="stat-ico"><svg class="ico"><use href="#i-relogio"/></svg></div><div class="num" id="master-trial">0</div><div class="lbl">Em teste</div><div class="meta">dentro dos 15 dias</div></button>
+        <button type="button" class="stat warn" data-mfiltro="vencendo"><div class="stat-ico"><svg class="ico"><use href="#i-alerta"/></svg></div><div class="num" id="master-vencendo">0</div><div class="lbl">Vencem em 7 dias</div><div class="meta">hora de cobrar</div></button>
+        <button type="button" class="stat danger" data-mfiltro="bloqueadas"><div class="stat-ico"><svg class="ico"><use href="#i-cadeado"/></svg></div><div class="num" id="master-bloqueadas">0</div><div class="lbl">Bloqueadas</div><div class="meta">acesso vencido</div></button>
+        <button type="button" class="stat roxo" data-mfiltro="inativas"><div class="stat-ico"><svg class="ico"><use href="#i-olho-off"/></svg></div><div class="num" id="master-inativas">0</div><div class="lbl">Sem acesso</div><div class="meta" id="master-inativas-meta">há 1 dia ou mais</div></button>
+      </div>
+
+      <div class="grade-master">
+        <!-- lista principal -->
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Turmas <span class="count" id="master-contador"></span></h2>
+              <p class="hint">Clique em uma turma para ver detalhes, ajustar prazo, status e senha.</p>
+            </div>
+          </div>
+          <div class="filters">
+            <div class="field field-busca input-ico">
+              <svg class="ico"><use href="#i-busca"/></svg>
+              <input type="search" id="busca-admin" placeholder="Buscar por turma, WhatsApp ou padrinho..." aria-label="Buscar turmas" />
+            </div>
+            <select id="ordem-admin" aria-label="Ordenar turmas" class="select-ordem">
+              <option value="vencimento">Vence primeiro</option>
+              <option value="recentes">Mais recentes</option>
+              <option value="nome">Nome (A–Z)</option>
+              <option value="indicacoes">Mais indicações</option>
+            </select>
+          </div>
+          <div class="seg seg-scroll" id="seg-master">
+            <button type="button" class="seg-opt" aria-pressed="true" data-mfiltro="todas">Todas <span class="count" id="mc-todas"></span></button>
+            <button type="button" class="seg-opt" aria-pressed="false" data-mfiltro="pagas">Assinantes <span class="count" id="mc-pagas"></span></button>
+            <button type="button" class="seg-opt" aria-pressed="false" data-mfiltro="teste">Em teste <span class="count" id="mc-teste"></span></button>
+            <button type="button" class="seg-opt" aria-pressed="false" data-mfiltro="vencendo">Vencendo <span class="count" id="mc-vencendo"></span></button>
+            <button type="button" class="seg-opt" aria-pressed="false" data-mfiltro="bloqueadas">Bloqueadas <span class="count count-danger" id="mc-bloqueadas"></span></button>
+            <button type="button" class="seg-opt" aria-pressed="false" data-mfiltro="inativas">Sem acesso <span class="count" id="mc-inativas"></span></button>
+          </div>
+          <ul class="lista-master" id="lista-usuarios-admin"></ul>
+        </div>
+
+        <!-- coluna lateral -->
+        <div class="master-lado">
+          <div class="panel">
+            <div class="panel-head">
+              <div><h2><span class="h-ico"><svg class="ico"><use href="#i-olho-off"/></svg></span>Turmas sem entrar</h2><p class="hint" id="master-inativas-hint">Ativas que não abrem o app há 1 dia ou mais.</p></div>
+              <button type="button" class="link-ver" onclick="lembrarInativasEmLote()">Lembrar todas <svg class="ico"><use href="#i-seta"/></svg></button>
+            </div>
+            <ul class="lista-atencao" id="master-inativas-lista"></ul>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><div><h2><span class="h-ico ouro"><svg class="ico"><use href="#i-relogio"/></svg></span>Próximos vencimentos</h2><p class="hint">Assinaturas e testes que acabam em até 7 dias.</p></div></div>
+            <ul class="lista-atencao" id="master-proximos"></ul>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><div><h2><span class="h-ico"><svg class="ico"><use href="#i-pessoas"/></svg></span>Ranking de indicações</h2><p class="hint">5 indicações = 50% de desconto · 10 = grátis.</p></div></div>
+            <ul class="lista-atencao" id="master-ranking"></ul>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><div><h2><span class="h-ico"><svg class="ico"><use href="#i-tendencia"/></svg></span>Novas turmas por mês</h2><p class="hint">Cadastros dos últimos 6 meses.</p></div></div>
+            <div class="barras" id="master-grafico"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       PAINEL LATERAL — DETALHES DA TURMA (master)
+       ===================================================================== -->
+  <div class="modal-overlay drawer-overlay" id="drawer-turma">
+    <div class="drawer drawer-largo" role="dialog" aria-modal="true" aria-labelledby="turma-titulo">
+      <div class="drawer-head">
+        <div class="pessoa">
+          <span class="av av-0" id="turma-avatar">T</span>
+          <div class="pessoa-txt">
+            <h3 id="turma-titulo">Turma</h3>
+            <span id="turma-tag"></span>
+          </div>
+        </div>
+        <button type="button" class="btn btn-icon" data-fechar aria-label="Fechar"><svg class="ico"><use href="#i-fechar"/></svg></button>
+      </div>
+      <div class="drawer-body">
+        <div class="info-grid" id="turma-info"></div>
+
+        <p class="form-secao">Uso do sistema</p>
+        <div class="info-grid info-grid-3" id="turma-uso"><div class="esqueleto"></div></div>
+
+        <p class="form-secao">Assinatura</p>
+        <div class="acoes-rapidas">
+          <button type="button" class="btn btn-ouro" onclick="turmaRenovar(30)"><svg class="ico"><use href="#i-coroa"/></svg>+30 dias</button>
+          <button type="button" class="btn" onclick="turmaRenovar(90)">+90 dias</button>
+          <button type="button" class="btn" onclick="turmaRenovar(365)">+1 ano</button>
+          <button type="button" class="btn" onclick="turmaRenovar(7, true)">+7 dias grátis</button>
+        </div>
+        <div class="form-linha">
+          <div class="form-grupo">
+            <label for="turma-expira">Expira em</label>
+            <input type="date" id="turma-expira" />
+          </div>
+          <div class="form-grupo">
+            <label for="turma-status">Status</label>
+            <select id="turma-status">
+              <option value="pago">Assinante (pago)</option>
+              <option value="gratis">Teste grátis</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grupo">
+          <label for="turma-obs">Anotações internas</label>
+          <textarea id="turma-obs" rows="3" placeholder="Ex.: pagou via PIX dia 05, pediu desconto..."></textarea>
+          <p class="form-dica" id="turma-obs-dica">Só você vê. Precisa da coluna <code>observacao</code> (veja supabase/schema.sql).</p>
+        </div>
+        <button type="button" class="btn btn-accent btn-bloco" id="btn-turma-salvar" onclick="turmaSalvar()"><svg class="ico"><use href="#i-check"/></svg>Salvar alterações</button>
+
+        <p class="form-secao">Mensagens prontas no WhatsApp</p>
+        <div class="acoes-rapidas">
+          <button type="button" class="btn btn-success" onclick="turmaWhats('cobranca')"><svg class="ico"><use href="#i-whats"/></svg>Cobrar renovação</button>
+          <button type="button" class="btn" onclick="turmaWhats('boasvindas')"><svg class="ico"><use href="#i-mascara"/></svg>Boas-vindas</button>
+          <button type="button" class="btn" onclick="turmaWhats('renovado')"><svg class="ico"><use href="#i-check"/></svg>Confirmar pagamento</button>
+          <button type="button" class="btn" onclick="turmaWhats('lembrete')"><svg class="ico"><use href="#i-relogio"/></svg>Lembrar de entrar</button>
+          <button type="button" class="btn" onclick="turmaWhats('livre')"><svg class="ico"><use href="#i-whats"/></svg>Conversa livre</button>
+        </div>
+
+        <p class="form-secao">Conta</p>
+        <div class="acoes-rapidas">
+          <button type="button" class="btn" onclick="turmaNovaSenha()"><svg class="ico"><use href="#i-cadeado"/></svg>Redefinir senha</button>
+          <button type="button" class="btn" onclick="turmaEditarWhats()"><svg class="ico"><use href="#i-telefone"/></svg>Trocar WhatsApp</button>
+          <button type="button" class="btn btn-danger" onclick="turmaApagar()"><svg class="ico"><use href="#i-lixeira"/></svg>Apagar turma</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- sem internet -->
+  <div class="faixa-offline" id="faixa-offline" role="status" aria-live="polite">
+    <svg class="ico"><use href="#i-alerta"/></svg>
+    <span>Sem internet · nada é salvo agora</span>
+  </div>
+
+  <!-- aviso flutuante -->
+  <div class="toast" id="toast" role="status" aria-live="polite"><span class="dot"></span><span id="toast-texto"></span></div>
+
+  <!-- botão de suporte -->
+  <button type="button" class="fab-suporte" id="fab-suporte" onclick="abrirSuporte()" aria-label="Suporte no WhatsApp">
+    <svg class="ico"><use href="#i-whats"/></svg><span>Suporte</span>
+  </button>
+
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/pagamentos.js"></script>
+</body>
+</html>
